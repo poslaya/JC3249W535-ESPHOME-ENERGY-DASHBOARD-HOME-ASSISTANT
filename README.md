@@ -7,11 +7,17 @@ This repository contains a complete ESPHome configuration for the JC3249W535 320
 ## Key Features!
 
 🖥️ Native LVGL dashboard rendered on JC3249W535 (ESP32-S3)
+
 ⚡ Real-time animation speed driven by sensor values (e.g. power flow)
+
 🌞 Photovoltaic and inverter data visualization
+
 🔄 Bidirectional energy flow indicators with directional arrows
+
 🎨 Color-coded labels based on energy context (import/export, PV active)
+
 📡 Seamless integration with Home Assistant via API
+
 
 ## Hardware Requirements
 
