@@ -21,15 +21,17 @@ This repository contains a complete ESPHome configuration for the JC3249W535 320
 
 ## Hardware Requirements
 
-JC3249W535c
-Optional: BME280, inverter with Modbus/MQTT, power meter
+* JC3249W535c
+* Optional: BME280,
+* inverter with Modbus/MQTT,
+* power meter
 
 ## Software Stack
 
-ESPHome (ESP-IDF framework)
-Home Assistant (with MQTT or native API)
-LVGL 8.4.0
-PlatformIO (for local builds)
+* ESPHome (ESP-IDF framework)
+* Home Assistant (with MQTT or native API)
+* LVGL 8.4.0
+* PlatformIO (for local builds)
 
 * Sensor values from Home Assistant are fetched via ESPHome.
 * Arrows animate vertically and horizontally to indicate energy direction.
