@@ -40,13 +40,10 @@ This repository contains a complete ESPHome configuration for the JC3249W535 320
 
 ## Getting Started
 
-Flash the ESP32-S3 with the provided .yaml using ESPHome CLI.
-
-Connect the device to Home Assistant via API or MQTT.
-
-Configure your sensors in HA (e.g. sensor.inverter_active_power, sensor.bidirectional_energy_meter_power_b).
-
-Watch the dashboard come alive with real-time data and animations.
+* Flash the ESP32-S3 with the provided .yaml using ESPHome CLI.
+* Connect the device to Home Assistant via API or MQTT.
+* Configure your sensors in HA (e.g. sensor.inverter_active_power, sensor.bidirectional_energy_meter_power_b).
+* Watch the dashboard come alive with real-time data and animations.
 
 
 ## 🎬 Demo Videos
