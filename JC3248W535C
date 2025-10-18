@@ -1,0 +1,902 @@
+esphome:
+  name: jc3248w535
+  friendly_name: Guition 320x480 JC3248W535 Native
+  platformio_options:
+    upload_speed: 921600
+    board_build.flash_mode: dio
+    board_build.f_flash: 80000000L
+    board_build.f_cpu: 240000000L
+
+esp32:
+  board: esp32-s3-devkitc-1
+  flash_size: 16MB
+  framework:
+    type: esp-idf
+    sdkconfig_options:
+      CONFIG_ESP32S3_DEFAULT_CPU_FREQ_240: "y"
+      CONFIG_ESP32S3_DATA_CACHE_64KB: "y"
+      CONFIG_ESP32S3_DATA_CACHE_LINE_64B: "y"
+      CONFIG_SPIRAM_FETCH_INSTRUCTIONS: y
+      CONFIG_SPIRAM_RODATA: y
+
+psram:
+  mode: octal
+  speed: 80MHz
+
+logger:
+  baud_rate: 921600
+
+api:
+  encryption:
+    key: "szctjULZfg2L9pzhsOQxP49CGKL1qAPajjkEbdbMHy8="
+
+ota:
+  - platform: esphome
+    password: "a07ce4750cc57b5360162ba12f209d3f"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+spi:
+  id: display_qspi
+  type: quad
+  clk_pin: 47
+  data_pins: [21, 48, 40, 39]
+
+i2c:
+  sda: 4
+  scl: 8
+  id: touchscreen_bus
+
+display:
+  - platform: qspi_dbi
+    model: axs15231
+    data_rate: 40MHz
+    id: my_display
+    spi_id: display_qspi
+    dimensions:
+      height: 480
+      width: 320
+    cs_pin: 45
+    rotation: 90
+    auto_clear_enabled: false
+
+output:
+  - platform: ledc
+    pin: GPIO1
+    id: backlight
+
+light:
+  - platform: monochromatic
+    output: backlight
+    name: "backlight Light"
+    restore_mode: ALWAYS_ON
+
+touchscreen:
+  - platform: axs15231
+    id: my_touch
+    display: my_display
+    i2c_id: touchscreen_bus
+    transform:
+      swap_xy: true
+      mirror_y: true
+    on_touch:
+      - lambda: |-
+          ESP_LOGI("cal", "x=%d, y=%d, x_raw=%d, y_raw=%0d",
+            touch.x,
+            touch.y,
+            touch.x_raw,
+            touch.y_raw
+          );
+          
+sensor:
+  - platform: homeassistant
+    name: "Putere Fotovoltaica"
+    id: pv_power
+    entity_id: sensor.inverter_active_power
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: label_pv_value
+            text: !lambda |-
+              char buf[20];
+              sprintf(buf, "#00ff00 %d", static_cast<int>(id(pv_power).state));
+              return std::string(buf);
+
+        - lvgl.spinner.update:
+            id: pv_ring
+            arc_color: 0xFF0000
+
+        - lambda: |-
+            static lv_anim_t anim_vertical;
+            static lv_anim_t anim_horizontal;
+            static bool anim_running = false;
+
+            if (id(pv_power).state > 0) {
+            lv_anim_del(id(arrow_v), nullptr);
+            lv_anim_del(id(arrow_lt), nullptr);
+
+            float m = static_cast<float>(id(meter_b_power).state);
+            if (m != m) m = 0.0f;
+            if (m < 0.0f) m = 0.0f;
+            if (m > 5500.0f) m = 5500.0f;
+
+            int anim_time = static_cast<int>(5500 - m);
+            if (anim_time < 300) anim_time = 300;
+
+            lv_obj_clear_flag(id(arrow_v), LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(id(arrow_lt), LV_OBJ_FLAG_HIDDEN);
+
+            lv_obj_set_x(id(arrow_v), 224);
+            lv_obj_set_y(id(arrow_v), 129);
+
+            lv_anim_init(&anim_vertical);
+            lv_anim_set_var(&anim_vertical, id(arrow_v));
+            lv_anim_set_values(&anim_vertical, 129, 207);
+            lv_anim_set_time(&anim_vertical, anim_time);
+            lv_anim_set_exec_cb(&anim_vertical, [](void * obj, int32_t v) {
+                lv_obj_set_y(static_cast<lv_obj_t *>(obj), v);
+                lv_obj_set_x(static_cast<lv_obj_t *>(obj), 214);
+            });
+            lv_anim_set_ready_cb(&anim_vertical, [](lv_anim_t * anim) {
+                lv_obj_add_flag(static_cast<lv_obj_t *>(anim->var), LV_OBJ_FLAG_HIDDEN);
+
+                lv_obj_set_x(id(arrow_lt), 216);
+                lv_obj_set_y(id(arrow_lt), 207);
+                lv_obj_clear_flag(id(arrow_lt), LV_OBJ_FLAG_HIDDEN);
+
+                lv_anim_start(&anim_horizontal);
+            });
+
+            lv_anim_init(&anim_horizontal);
+            lv_anim_set_var(&anim_horizontal, id(arrow_lt));
+            lv_anim_set_values(&anim_horizontal, 216, 122);
+            lv_anim_set_time(&anim_horizontal, anim_time);
+            lv_anim_set_exec_cb(&anim_horizontal, [](void * obj, int32_t v) {
+                lv_obj_set_x(static_cast<lv_obj_t *>(obj), v);
+                lv_obj_set_y(static_cast<lv_obj_t *>(obj), 218);
+            });
+            lv_anim_set_ready_cb(&anim_horizontal, [](lv_anim_t * anim) {
+                lv_obj_add_flag(static_cast<lv_obj_t *>(anim->var), LV_OBJ_FLAG_HIDDEN);
+
+                lv_obj_set_x(id(arrow_v), 214);
+                lv_obj_set_y(id(arrow_v), 129);
+                lv_obj_clear_flag(id(arrow_v), LV_OBJ_FLAG_HIDDEN);
+
+                lv_anim_start(&anim_vertical);
+            });
+
+            lv_anim_start(&anim_vertical);
+            } else {
+            lv_anim_del(id(arrow_v), nullptr);
+            lv_anim_del(id(arrow_lt), nullptr);
+            lv_obj_add_flag(id(arrow_v), LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(id(arrow_lt), LV_OBJ_FLAG_HIDDEN);
+            lv_obj_set_x(id(arrow_v), -100);
+            lv_obj_set_x(id(arrow_lt), -100);
+            }
+
+
+  - platform: homeassistant
+    name: "Bidirectional Meter B"
+    id: meter_b_power
+    entity_id: sensor.bidirectional_energy_meter_power_b
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: label_b_value
+            text: !lambda |-
+              float p_active = static_cast<float>(id(power_meter_active).state);
+              float inv_pv = static_cast<float>(id(pv_power).state);
+              if (p_active != p_active) p_active = 0.0f;
+              if (inv_pv != inv_pv) inv_pv = 0.0f;
+              const char * color_hex = "#FFFFFF";
+              if (p_active < 0.0f && inv_pv == 0.0f) {
+                color_hex = "#ff0303";
+              } else if (p_active < 0.0f && inv_pv > 0.0f) {
+                color_hex = "#006aff";
+              } else if (p_active >= 0.0f && inv_pv > 0.0f) {
+                color_hex = "#00ff00";
+              } else {
+                color_hex = "#FFFFFF";
+              }
+              char buf[40];
+              sprintf(buf, "%s %d", color_hex, static_cast<int>(id(meter_b_power).state));
+              return std::string(buf);
+
+        - lvgl.spinner.update:
+            id: b_ring
+            arc_color: 0xFF0000
+
+
+  - platform: homeassistant
+    name: "Power Meter Active"
+    id: power_meter_active
+    entity_id: sensor.power_meter_active_power
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: label_b2_value
+            text: !lambda |-
+              char buf[20];
+              sprintf(buf, "#FFFFFF %d", static_cast<int>(id(power_meter_active).state));
+              return std::string(buf);
+        - lvgl.spinner.update:
+            id: b2_ring
+            arc_color: 0xFF0000
+        - lambda: |-
+            static lv_anim_t a;
+            static lv_anim_t a_v2;
+            static lv_anim_t a_h2;
+            static bool anim_started = false;
+            static bool anim_started_v2 = false;
+
+            // cazul negativ (exista deja) - nu atingem logica lui
+            if (id(power_meter_active).state < 0) {
+              if (!anim_started) {
+                anim_started = true;
+
+                int anim_time = static_cast<int>(5500 + id(power_meter_active).state);
+                if (anim_time < 500) anim_time = 500;
+
+                lv_anim_init(&a);
+                lv_anim_set_var(&a, id(arrow_anim));
+                lv_anim_set_values(&a, 352, 122);
+                lv_anim_set_time(&a, anim_time);
+                lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
+                lv_anim_set_exec_cb(&a, [](void * obj, int32_t v) {
+                  lv_obj_set_x(static_cast<lv_obj_t *>(obj), v);
+                  lv_obj_set_y(static_cast<lv_obj_t *>(obj), 248);
+                });
+                lv_anim_set_ready_cb(&a, [](lv_anim_t * anim) {
+                  lv_obj_set_x(static_cast<lv_obj_t *>(anim->var), 352);
+                });
+                lv_obj_set_y(id(arrow_anim), 248);
+                lv_anim_start(&a);
+              }
+            } else {
+              // opreste animatia negativa daca exista
+              lv_anim_del(id(arrow_anim), nullptr);
+              lv_obj_set_x(id(arrow_anim), -100);
+              anim_started = false;
+            }
+
+            // --- nou: cazul pozitiv: animatie verticala (pe X=256) -> orizontala (y=129) cu '>' spre dreapta
+            if (id(power_meter_active).state > 0) {
+              if (!anim_started_v2) {
+                anim_started_v2 = true;
+
+                // int anim_time_v2 = static_cast<int>(5500 - id(power_meter_active).state);
+                float raw = fabsf(static_cast<float>(id(power_meter_active).state));
+                int anim_time_v2 = static_cast<int>(5500 - raw);
+                if (anim_time_v2 < 300) anim_time_v2 = 300;
+
+                // asiguram vizibilitate initiala: arata v, ascunde >
+                lv_obj_clear_flag(id(arrow_v2), LV_OBJ_FLAG_HIDDEN);
+                lv_obj_add_flag(id(arrow_gt), LV_OBJ_FLAG_HIDDEN);
+
+                // pozitionare initiala pentru v (X fix = 246)
+                lv_obj_set_x(id(arrow_v2), 246);
+                lv_obj_set_y(id(arrow_v2), 129);
+
+                // Vertical animation: Y 129 -> 207, X fixed = 246
+                lv_anim_init(&a_v2);
+                lv_anim_set_var(&a_v2, id(arrow_v2));
+                lv_anim_set_values(&a_v2, 129, 207);
+                lv_anim_set_time(&a_v2, anim_time_v2);
+                lv_anim_set_exec_cb(&a_v2, [](void * obj, int32_t v) {
+                  lv_obj_set_y(static_cast<lv_obj_t *>(obj), v);
+                  lv_obj_set_x(static_cast<lv_obj_t *>(obj), 246);
+                });
+                lv_anim_set_ready_cb(&a_v2, [](lv_anim_t * anim) {
+                  // ascundem v
+                  lv_obj_add_flag(static_cast<lv_obj_t *>(anim->var), LV_OBJ_FLAG_HIDDEN);
+
+                  // pozitionam si aratam '>' pe linia orizontala (y=129)
+                  lv_obj_set_x(id(arrow_gt), 244);
+                  lv_obj_set_y(id(arrow_gt), 129);
+                  lv_obj_clear_flag(id(arrow_gt), LV_OBJ_FLAG_HIDDEN);
+
+                  // pornim animatia orizontala
+                  lv_anim_start(&a_h2);
+                });
+
+                // Orizontal animation: X 254 -> 352, Y fixed = 129
+                lv_anim_init(&a_h2);
+                lv_anim_set_var(&a_h2, id(arrow_gt));
+                lv_anim_set_values(&a_h2, 254, 338);
+                lv_anim_set_time(&a_h2, anim_time_v2);
+                lv_anim_set_exec_cb(&a_h2, [](void * obj, int32_t v) {
+                  lv_obj_set_x(static_cast<lv_obj_t *>(obj), v);
+                  lv_obj_set_y(static_cast<lv_obj_t *>(obj), 218);
+                });
+                lv_anim_set_ready_cb(&a_h2, [](lv_anim_t * anim) {
+                  // ascundem '>' si resetam v pentru urmatorul ciclu
+                  lv_obj_add_flag(static_cast<lv_obj_t *>(anim->var), LV_OBJ_FLAG_HIDDEN);
+
+                  lv_obj_set_x(id(arrow_v2), 256);
+                  lv_obj_set_y(id(arrow_v2), 218);
+                  lv_obj_clear_flag(id(arrow_v2), LV_OBJ_FLAG_HIDDEN);
+
+                  // restart verticala
+                  lv_anim_start(&a_v2);
+                });
+
+                // start vertical cycle
+                lv_anim_start(&a_v2);
+              }
+            } else {
+              // daca power_meter_active nu e >0, opresti animatia v2
+              lv_anim_del(id(arrow_v2), nullptr);
+              lv_anim_del(id(arrow_gt), nullptr);
+              lv_obj_add_flag(id(arrow_v2), LV_OBJ_FLAG_HIDDEN);
+              lv_obj_add_flag(id(arrow_gt), LV_OBJ_FLAG_HIDDEN);
+              lv_obj_set_x(id(arrow_v2), -100);
+              lv_obj_set_x(id(arrow_gt), -100);
+              anim_started_v2 = false;
+            }
+
+
+  - platform: homeassistant
+    name: "Tensiune Formatata"
+    id: voltage_formatted
+    entity_id: sensor.tensiune_formatata
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: label_voltage
+            text: !lambda |-
+              char buf[32];
+              sprintf(buf, "#FFFFFF %.1f V", id(voltage_formatted).state);
+              return std::string(buf);
+
+  - platform: homeassistant
+    name: "Temperatura Interna Invertor"
+    id: inverter_temp
+    entity_id: sensor.inverter_internal_temperature
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: label_temperature
+            text: !lambda |-
+              char buf[32];
+              sprintf(buf, "#FFFFFF %.1f °C", id(inverter_temp).state);
+              return std::string(buf);
+
+  - platform: homeassistant
+    name: "Producție Zilnică Invertor"
+    id: inverter_daily_yield
+    entity_id: sensor.inverter_daily_yield
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: label_daily_yield
+            text: !lambda |-
+              char buf[32];
+              sprintf(buf, "#FFFFFF %.2f kWh", id(inverter_daily_yield).state);
+              return std::string(buf);
+
+  - platform: homeassistant
+    name: "Producție Lunară Invertor"
+    id: inverter_monthly_yield
+    entity_id: sensor.inverter_monthly_yield
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: label_monthly_yield
+            text: !lambda |-
+              char buf[32];
+              sprintf(buf, "#FFFFFF %.2f kWh", id(inverter_monthly_yield).state);
+              return std::string(buf);
+              
+  - platform: homeassistant
+    name: "PV1 Voltage"
+    id: pv1_voltage
+    entity_id: sensor.inverter_pv_1_voltage
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: label_pv1_voltage
+            text: !lambda |-
+              char buf[32];
+              // afișăm valoarea rotunjită la întreg și adăugăm unitatea V
+              sprintf(buf, "#FFFFFF %dV", static_cast<int>(id(pv1_voltage).state));
+              return std::string(buf);
+
+  - platform: homeassistant
+    name: "BME280 Temperature 2"
+    id: bme280_temp_2
+    entity_id: sensor.bme280test_bme280_temperature_2
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: label_bme_temp_2
+            text: !lambda |-
+              char buf[32];
+              float v = static_cast<float>(id(bme280_temp_2).state);
+              if (v != v) v = 0.0f;
+              // afisare cu o zecimala si simbolul °C
+              int tenths = static_cast<int>(roundf(v * 10.0f));
+              sprintf(buf, "#FFFFFF %d.%d°C", tenths / 10, abs(tenths % 10));
+              return std::string(buf);
+              
+  - platform: homeassistant
+    name: "BME280 Humidity 2"
+    id: bme280_hum_2
+    entity_id: sensor.bme280test_bme280_humidity_2
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: label_bme_hum_2
+            text: !lambda |-
+              char buf[32];
+              float h = static_cast<float>(id(bme280_hum_2).state);
+              if (h != h) h = 0.0f;
+              int tenths = static_cast<int>(roundf(h * 10.0f));
+              sprintf(buf, "#FFFFFF %d.%d%%", tenths / 10, abs(tenths % 10));
+              return std::string(buf);
+  - platform: homeassistant
+    name: "BME280 Pressure"
+    id: bme280_pressure
+    entity_id: sensor.bme280test_bme280_pressure
+    on_value:
+      then:
+       - lvgl.label.update:
+            id: label_bme_press
+            text: !lambda |-
+              char buf[32];
+              float p = static_cast<float>(id(bme280_pressure).state);
+              if (p != p) p = 0.0f;
+              int tenths = static_cast<int>(roundf(p * 10.0f));
+              sprintf(buf, "#FFFFFF %d.%d hPa", tenths / 10, abs(tenths % 10));
+              return std::string(buf);
+
+lvgl:
+  bg_color: 0
+  pages:
+    - id: main_page
+      widgets:
+        - spinner:
+            id: pv_ring
+            align: TOP_MID
+            x: 0
+            y: 0
+            radius: 72
+            spin_time: 5s
+            arc_length: 360deg
+            arc_color: 0xFF0000
+
+        - label:
+            id: label_pv_value
+            align: TOP_MID
+            x: 0
+            y: 44
+            text: "#00ff00 --"
+            text_font: montserrat_34
+            recolor: true
+
+        - label:
+            id: label_pv_unit
+            align: TOP_MID
+            x: 0
+            y: 92
+            text: "#00ff00 W"
+            text_font: montserrat_20
+            recolor: true           
+        #linie orizontala, intre cele doua cercuri
+        - line:
+            points:
+              - x: 354
+                y: 270
+              - x: 122
+                y: 270
+            line_color: 0x808080
+            line_width: 4
+        #linie orizontala partea stanga
+        - line:
+            points:
+              - x: 226
+                y: 238
+              - x: 122
+                y: 238
+            line_color: 0x808080
+            line_width: 4
+        #linie orizntala partea dreapta
+        - line:
+            points:
+              - x: 352
+                y: 238
+              - x: 254
+                y: 238
+            line_color: 0x808080
+            line_width: 4
+        #linie verticala partea stanga 
+        - line:
+            points:
+              - x: 224
+                y: 129
+              - x: 224
+                y: 238
+            line_color: 0x808080
+            line_width: 4
+        #linie verticala partea dreapta
+        - line:
+            points:
+              - x: 256
+                y: 129
+              - x: 256
+                y: 238
+            line_color: 0x808080
+            line_width: 4
+
+        - spinner:
+            id: b_ring
+            align: BOTTOM_LEFT
+            x: 0
+            y: -8
+            radius: 48
+            spin_time: 5s
+            arc_length: 360deg
+            arc_color: 0xFF0000
+
+        - label:
+            id: label_b_value
+            align: BOTTOM_LEFT
+            x: 17
+            y: -48
+            width: 96
+            text: "#00ff00 --"
+            text_font: montserrat_34
+            text_align: CENTER
+            recolor: true
+
+        - label:
+            id: label_b_unit
+            align: BOTTOM_LEFT
+            x: 17
+            y: -23
+            width: 96
+            text: "#00ff00 W"
+            text_font: montserrat_20
+            text_align: CENTER
+            recolor: true
+
+        - spinner:
+            id: b2_ring
+            align: BOTTOM_RIGHT
+            x: 0
+            y: -8
+            radius: 48
+            spin_time: 5s
+            arc_length: 360deg
+            arc_color: 0xFF0000
+
+        - label:
+            id: label_b2_value
+            align: BOTTOM_RIGHT
+            x: -17
+            y: -48
+            width: 96
+            text: "#00ff00 --"
+            text_font: montserrat_34
+            text_align: CENTER
+            recolor: true
+
+        - label:
+            id: label_b2_unit
+            align: BOTTOM_RIGHT
+            x: -17
+            y: -23
+            width: 96
+            text: "#00ff00 W"
+            text_font: montserrat_20
+            text_align: CENTER
+            recolor: true
+            
+        - label:
+            id: arrow_anim
+            align: TOP_LEFT
+            x: -100
+            y: 248
+            text: "#ff0303 <"
+            text_font: montserrat_40
+            recolor: true 
+
+        - obj:
+            id: yellow_square
+            align: TOP_LEFT
+            x: 135
+            y: 170
+            width: 50
+            height: 50
+            bg_color: 0xFFFF00
+            
+        - obj:
+            id: yellow_square2
+            align: TOP_LEFT
+            x: 150
+            y: 187
+            width: 20
+            height: 20
+            bg_color: 0x000000
+            
+        - line:
+            id: red_triangle
+            x: 130  
+            y: 170   
+            line_color: 0xFF0000
+            line_width: 8
+            points:
+              - x: 0
+                y: 0
+              - x: 60
+                y: 0
+                
+        - line:
+            id: red_triangle2
+            x: 130  
+            y: 140   
+            line_color: 0xFF0000
+            line_width: 8
+            points:
+              - x: 58
+                y: 28
+              - x: 29
+                y: 0
+                
+        - line:
+            id: red_triangle3
+            x: 130  
+            y: 140   
+            line_color: 0xFF0000
+            line_width: 8
+            points:
+              - x: 31
+                y: 0
+              - x: 2
+                y: 30
+               
+        - line:
+            points:
+              - x: 336
+                y: 130
+              - x: 336
+                y: 220
+            line_color: 0xFFFFFF
+            line_width: 4
+            
+        - line:
+            points:
+              - x: 326
+                y: 135
+              - x: 346
+                y: 135
+            line_color: 0xFFFFFF
+            line_width: 4
+            
+        - line:
+            points:
+              - x: 326
+                y: 150
+              - x: 346
+                y: 150
+            line_color: 0xFFFFFF
+            line_width: 4
+            
+        - line:
+            points:
+              - x: 20
+                y: 1
+              - x: 180
+                y: 1
+            line_color: 0xFFFFFF
+            line_width: 4
+
+            
+        - line:
+            points:
+              - x: 10
+                y: 40
+              - x: 170
+                y: 40
+            line_color: 0xFFFFFF
+            line_width: 4
+            
+        - line:
+            points:
+              - x: 20
+                y: 0
+              - x: 10
+                y: 40
+            line_color: 0xFFFFFF
+            line_width: 4
+            
+        - line:
+            points:
+              - x: 40
+                y: 0
+              - x: 30
+                y: 40
+            line_color: 0xFFFFFF
+            line_width: 4
+            
+        - line:
+            points:
+              - x: 60
+                y: 0
+              - x: 50
+                y: 40
+            line_color: 0xFFFFFF
+            line_width: 4
+            
+        - line:
+            points:
+              - x: 80
+                y: 0
+              - x: 70
+                y: 40
+            line_color: 0xFFFFFF
+            line_width: 4
+            
+        - line:
+            points:
+              - x: 100
+                y: 0
+              - x: 90
+                y: 40
+            line_color: 0xFFFFFF
+            line_width: 4   
+            
+        - line:
+            points:
+              - x: 120
+                y: 0
+              - x: 110
+                y: 40
+            line_color: 0xFFFFFF
+            line_width: 4  
+          
+        - line:
+            points:
+              - x: 140
+                y: 0
+              - x: 130
+                y: 40
+            line_color: 0xFFFFFF
+            line_width: 4   
+         
+        - line:
+            points:
+              - x: 160
+                y: 0
+              - x: 150
+                y: 40
+            line_color: 0xFFFFFF
+            line_width: 4   
+         
+        - line:
+            points:
+              - x: 180
+                y: 0
+              - x: 170
+                y: 40
+            line_color: 0xFFFFFF
+            line_width: 4             
+            
+        - label:
+            id: label_voltage
+            align: TOP_RIGHT
+            x: 0
+            y: 25
+            text: "#FFFFFF --"
+            text_font: montserrat_20
+            text_align: RIGHT
+            recolor: true
+            
+        - label:
+            id: label_temperature
+            align: TOP_RIGHT
+            x: 0
+            y: 0
+            text: "#FFFFFF --"
+            text_font: montserrat_20
+            text_align: RIGHT
+            recolor: true
+
+        - label:
+            id: label_daily_yield
+            align: TOP_RIGHT
+            x: 0
+            y: 50  
+            text: "#FFFFFF --"
+            text_font: montserrat_20
+            text_align: RIGHT
+            recolor: true
+
+        - label:
+            id: label_monthly_yield
+            align: TOP_RIGHT
+            x: 0
+            y: 75  
+            text: "#FFFFFF --"
+            text_font: montserrat_20
+            text_align: RIGHT
+            recolor: true
+            
+        - label:
+            id: arrow_v
+            align: TOP_LEFT
+            x: -100
+            y: 129
+            text: "#00FF00 v"
+            text_font: montserrat_38
+            recolor: true
+
+        - label:
+            id: arrow_lt
+            align: TOP_LEFT
+            x: -100
+            y: 238
+            text: "#00FF00 <"
+            text_font: montserrat_40
+            recolor: true
+            
+        - label:
+            id: arrow_v2
+            align: TOP_LEFT
+            x: -100
+            y: 129
+            text: "#08fcf0 v"
+            text_font: montserrat_38
+            recolor: true
+
+        - label:
+            id: arrow_gt
+            align: TOP_LEFT
+            x: -100
+            y: 129
+            text: "#08fcf0 >"
+            text_font: montserrat_38
+            recolor: true
+
+        - label:
+            id: label_pv1_voltage
+            align: TOP_LEFT
+            x: 25
+            y: 45
+            text: "#FFFFFF --"
+            text_font: montserrat_20
+            text_align: RIGHT
+            recolor: true
+            
+        - label:
+            id: label_bme_temp_2
+            align: TOP_LEFT
+            x: 25
+            y: 70
+            text: "#FFFFFF --.-°C"
+            text_font: montserrat_20
+            text_align: RIGHT
+            recolor: true
+            
+        - label:
+            id: label_bme_hum_2
+            align: TOP_LEFT
+            x: 25
+            y: 95
+            text: "#FFFFFF --.-%"
+            text_font: montserrat_20
+            text_align: RIGHT
+            recolor: true
+
+        - label:
+            id: label_bme_press
+            align: TOP_LEFT
+            x: 25
+            y: 120
+            text: "#FFFFFF ---- hPa"
+            text_font: montserrat_20
+            text_align: RIGHT
+            recolor: true
+
