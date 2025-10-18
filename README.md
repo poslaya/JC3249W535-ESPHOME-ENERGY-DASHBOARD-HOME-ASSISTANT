@@ -34,17 +34,27 @@ PlatformIO (for local builds)
 ## How It Works
 
 Sensor values from Home Assistant are fetched via ESPHome.
+
 Arrows animate vertically and horizontally to indicate energy direction.
+
 Animation speed is dynamically calculated as 6000 - sensor_value, clamped to ensure smooth transitions.
+
 Labels recolor based on energy context (e.g. red for import, green for PV export).
+
 
 ## Getting Started
 
 Flash the ESP32-S3 with the provided .yaml using ESPHome CLI.
+
 Connect the device to Home Assistant via API or MQTT.
+
 Configure your sensors in HA (e.g. sensor.inverter_active_power, sensor.bidirectional_energy_meter_power_b).
+
 Watch the dashboard come alive with real-time data and animations.
+
+
 ## 🎬 Demo Videos
+
 
 ### JC3248W535C · Real‑time Energy Monitoring (ESPHome + Home Assistant)
 
