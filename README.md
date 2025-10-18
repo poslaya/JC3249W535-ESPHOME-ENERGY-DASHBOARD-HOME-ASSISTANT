@@ -3,7 +3,7 @@ Overview This repository contains a complete ESPHome configuration for the JC324
 
 Key Features!
 
-[IMG_20251016_152442662_HDR](https://github.com/user-attachments/assets/f6bd2de3-0f8f-4f59-9c62-26524077f44f)
+![Dashboard preview](https://github.com/user-attachments/assets/f6bd2de3-0f8f-4f59-9c62-26524077f44f)
 
 🖥️ Native LVGL dashboard rendered on JC3249W535 (ESP32-S3)
 
