@@ -1,5 +1,12 @@
 # 📘 JC3249W535 – ESPHome Energy Dashboard for Home Assistant
 
+## 🎬 Demo Video
+
+[![Watch on YouTube](https://img.youtube.com/vi/TExtEiJQPeo/hqdefault.jpg)](https://www.youtube.com/shorts/TExtEiJQPeo)
+
+[![Watch on YouTube](https://img.youtube.com/vi/Ba1jKAf0Ffs/hqdefault.jpg)](https://www.youtube.com/shorts/Ba1jKAf0Ffs)
+
+
 This repository contains a complete ESPHome configuration for the JC3249W535 320×480 display module, integrated with Home Assistant to visualize real-time energy data. It features a custom LVGL-based UI with animated arrows, dynamic color-coded indicators, and responsive widgets that reflect photovoltaic production, bidirectional power flow, and inverter metrics.
 
 ![Dashboard preview](https://github.com/user-attachments/assets/f6bd2de3-0f8f-4f59-9c62-26524077f44f)
