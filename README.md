@@ -44,6 +44,9 @@ Watch the dashboard come alive with real-time data and animations.
 
 [![Watch on YouTube](https://img.youtube.com/vi/TExtEiJQPeo/hqdefault.jpg)](https://www.youtube.com/shorts/TExtEiJQPeo)
 
-### Old vs. New: HTTP Request vs. ESPHome - ESP32-8048S070 vs. JC3248W535C – Energy Dashboard Showdown
+### Old vs. New 
+HTTP Request vs. ESPHome 
+ESP32-8048S070 vs. JC3248W535C 
+Energy Dashboard Showdown
 
 [![Watch on YouTube](https://img.youtube.com/vi/Ba1jKAf0Ffs/hqdefault.jpg)](https://www.youtube.com/shorts/Ba1jKAf0Ffs)
